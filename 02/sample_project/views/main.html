@@ -1,0 +1,44 @@
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript">
+		$( function() {
+			$( 'button' ).on( 'click', function() {
+				$.ajax( {
+					url: '/',
+					type: 'put',
+					data: {
+						todo: $( 'input' ).val()
+					},
+					success: function( $data ) {
+						//console.log( $data );
+						location.reload();
+					}
+				} );
+			} );
+			$( 'a' ).on( 'click', function( $event ) {
+				$event.preventDefault();
+				$.ajax( {
+					url: $( this ).attr( 'href' ),
+					type: 'delete',
+					success: function() {
+						location.reload();
+					}
+				})
+			} );
+		} );
+	</script>
+</head>
+<body>
+	<ul>
+		<% for( var i = 0; i < list.length; i++ ) { %>
+			<li><%= list[ i ].todo %> <a href="/<%= list[ i ].id %>">삭제</a></li>	
+		<% } %>
+	</ul>
+	<form method="put" action="" onsubmit="return false;">
+		<input type="text" name="todo"><br>
+		<button>저장</button>
+	</form>
+</body>
+</html>
