@@ -8,8 +8,7 @@ var _ = require( 'underscore' );
 // DB
 var databaseUrl = "undefined0802";
 var collections = [ 'users' ];
-var db = require( "mongojs" ).connect( databaseUrl, collections ),
-	mongoID = require("mongojs").mongoID;
+var db = require( "mongojs" ).connect( databaseUrl, collections );
 
 // all environments
 app.set( 'port', process.env.PORT || 3000 );
