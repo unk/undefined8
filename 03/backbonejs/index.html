@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title></title>
+	<script src="underscore.js"></script>
+	<script src="jquery-2.1.0.js"></script>
+	<script src="backbone.js"></script>
+	<script>
+		var Config = Backbone.Model.extend();
+		var config = new Config();
+		config.set( 'service_type', 'ky' );
+		config.set( 'search_type', 'artist' );
+
+		var song_data = [];
+		song_data.push( { number: 48440, artist: '악동뮤지션', title: '얼음들' } );
+		song_data.push( { number: 47576, artist: '김경호', title: 'Hey Hey Hey' } );
+		song_data.push( { number: 3333, artist: '이소라', title: '바람이 분다' } );
+		song_data.push( { number: 6858, artist: '윤도현', title: '너를 보내고' } );
+		song_data.push( { number: 1336, artist: '임형주', title: '샐리 가든' } );
+		song_data.push( { number: 1974, artist: '임형주', title: '천개의 바람이 되어' } );
+		song_data.push( { number: 1111, artist: '버즈', title: '질주' } );
+		song_data.push( { number: 2222, artist: '브로콜리 너마저', title: '앵콜요청금지' } );
+		song_data.push( { number: 9333, artist: '쉐릴 놈', title: '다이아몬드 크레바스' } );
+
+		var Song = Backbone.Model.extend(); // number, artist, title
+		var SearchResult = Backbone.Collection.extend( { model: Song } );
+		var search_result = new SearchResult();
+
+		function hidePage() {
+			_.each( document.querySelectorAll( '.page' ), function( $element ) {
+				$element.style.display = 'none';
+			} );
+		}
+		var Router = Backbone.Router.extend( {
+			routes: {
+				'favorite' : 'favorite',
+				'search' : 'search',
+				'settings' : 'settings'
+			},
+			favorite: function() {
+				hidePage();
+				document.getElementById( 'favorite' ).style.display = 'block';
+			},
+			search: function() {
+				hidePage();
+				document.getElementById( 'search' ).style.display = 'block';
+			},
+			settings: function() {
+				hidePage();
+				document.getElementById( 'settings' ).style.display = 'block';
+			}
+		} );
+		if( location.hash.split( '#' ).pop() == '' ) {
+			location.hash = 'search';
+		}
+		var router = new Router();
+		Backbone.history.start();
+	</script>
+	<style type="text/css">
+		.page {
+			display: none;
+		}
+		#search {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<ul>
+		<li><a href="#favorite">즐겨찾기</a></li>
+		<li><a href="#search">검색</a></li>
+		<li><a href="#settings">환경설정</a></li>
+	</ul>
+	<div id="favorite" class="page">즐겨찾기</div>
+	<div id="search" class="page">
+		<button id="service_type">금영</button>
+		<button id="search_type">가수</button>
+		<input id="keyword" type="text"/>
+		<button id="search_button">검색</button>
+		<ul id="result_list">
+
+		</ul>
+	</div>
+	<div id="settings" class="page">환경설정</div>
+
+	<script>
+		var url = {};
+		url.ky = 'http://www.ikaraoke.co.kr/';
+		url.tj = 'http://www.tjmedia.co.kr/';
+
+		var service_button = document.getElementById( 'service_type' );
+		service_button.addEventListener( 'click', function() {
+			var type = config.get( 'service_type' );
+			type = type == 'ky' ? 'tj' : 'ky';
+			config.set( 'service_type', type );
+		} );
+
+		var type_button = document.getElementById( 'search_type' );
+		type_button.addEventListener( 'click', function() {
+			var type = config.get( 'search_type' );
+			type = type == 'artist' ? 'title' : 'artist';
+			config.set( 'search_type', type );
+		} );
+
+		var search_button = document.getElementById( 'search_button' );
+		search_button.addEventListener( 'click', function() {
+			clearResult();
+
+			var keyword = document.getElementById( 'keyword' ).value;
+			var type = config.get( 'search_type' );
+			var result = _.filter( song_data, function( $element ) {
+				return $element[ type ].indexOf( keyword ) >= 0 ? true : false;
+			} );
+
+			// create model
+			_.each( result, function( $element ) {
+				var song = new Song();
+				song.set( 'number', $element.number );
+				song.set( 'artist', $element.artist );
+				song.set( 'title', $element.title );
+				search_result.add( song );
+			} );
+		} );
+
+		config.on( 'change:service_type', function( $model, $value ) {
+			var label = $value == 'tj' ? '태진' : '금영';
+			document.getElementById( 'service_type' ).innerText = label;
+		} );
+		config.on( 'change:search_type', function( $model, $value ) {
+			var label = $value == 'artist' ? '가수' : '제목';
+			document.getElementById( 'search_type' ).innerText = label;
+		} );
+		search_result.on( 'add', function( $model ) {
+			var list = document.getElementById( 'result_list' );
+			var item = document.createElement( 'li' );
+			item.innerText = $model.get( 'number' );
+			item.innerText += ' ';
+			item.innerText += $model.get( 'artist' );
+			item.innerText += ' ';
+			item.innerText += $model.get( 'title' );
+			list.appendChild( item );
+		} );
+		function clearResult() {
+			search_result.reset();
+			var list = document.getElementById( 'result_list' );
+			var item;
+			while( item = document.querySelector( '#result_list li') ) {
+				list.removeChild( item );
+			}
+		}
+	</script>
+</body>
+</html>
