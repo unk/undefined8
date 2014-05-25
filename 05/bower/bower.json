@@ -1,0 +1,21 @@
+{
+  "name": "undefined0805",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Unk/undefined8",
+  "authors": [
+    "Unknown GrotesQ <unknown@grotesq.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "*",
+    "jquery": "1.*",
+    "underscore": "*"
+  }
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title></title>
+	<script src="underscore-min.js"></script>
+	<script src="jquery-2.1.0.min.js"></script>
+	<script>
+		String.prototype.fillZero = function( $length ) {
+			var str = this.toString();
+			while( str.length < $length ) {
+				str = '0' + str;
+			}
+			return str;
+		}
+
+		$( function() {
+			var db = window.openDatabase( 'test_db', '1.0', 'Test Database', 2*1024*1024 );
+			db.transaction( function( $tx ) {
+				//$tx.executeSql( 'create table if not exists config( name, value )' );
+				$tx.executeSql( 'create table if not exists todos( id unique , todo, create_date )' );
+				$tx.executeSql( 'select * from todos order by id desc', [], function( $tx, $result ) {
+					_.each( $result.rows, function( $element, $index ) {
+						var row = $result.rows.item( $index );
+						var html = '<li>%todo %date</li>';
+						html = html.replace( '%todo', row.todo );
+						html = html.replace( '%date', row.create_date );
+						$( '#list' ).append( html );
+					} );
+				} );
+			} );
+
+			$( '#submit' ).on( 'click', function() {
+				var todo = $( '#todo' ).val();
+				if( !todo ) {
+					return;
+				}
+				var now = new Date();
+				var id = now.getTime();
+				var create_date = '%Y-%m-%d';
+				create_date = create_date.replace( '%Y', now.getFullYear() );
+				create_date = create_date.replace( '%m', now.getMonth().toString().fillZero( 2 ) );
+				create_date = create_date.replace( '%d', now.getDate().toString().fillZero( 2 ) );
+
+				db.transaction( function( $tx ) {
+					$tx.executeSql( 'insert into todos values( ?, ?, ? )', [ id, todo, create_date ], function( $tx, $result ) {
+						var html = '<li>%todo %date</li>';
+						html = html.replace( '%todo', todo );
+						html = html.replace( '%date', create_date );
+						$( '#list' ).append( html );
+					} );
+				} );
+			} );
+		} );
+	</script>
+</head>
+<body>
+<ul id="list">
+
+</ul>
+<input id="todo" type="text"/><button id="submit">추가</button>
+</body>
+</html>

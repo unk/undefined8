@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<script src="underscore-min.js"></script>
+	<script src="jquery-2.1.0.min.js"></script>
+	<script src="backbone.js"></script>
+	<script>
+		$( function() {
+			// document ready
+			var TestView = Backbone.View.extend( {
+				initialize: function() {
+					//alert( 'init' );
+					this.render();
+				},
+				render: function() {
+					// 뷰가 렌더링 될 때
+					this.$el.html( '<h1>Hello!</h1>' );
+				},
+				// custom functions
+			} );
+
+			var currentView;
+
+			var Page1 = Backbone.View.extend( {
+				initialize: function() {
+					this.render();
+				},
+				render: function() {
+					this.$el.html( '<h1>Hi! This is page 1.</h1>' );
+				}
+			} );
+
+			var Page2 = Backbone.View.extend( {
+				initialize: function() {
+					this.render();
+				},
+				render: function() {
+					this.$el.html( '<h1>Hi! This is page 2.</h1>' );
+				}
+			} );
+			// var view = new TestView( { el: $( '#container' ) } );
+			// View를 생성할 때 부모(Parent) 컨테이너 지정
+
+			$( '#page1' ).on( 'click', function() {
+				if( currentView ) {
+					//currentView.remove();
+				}
+				currentView = new Page1( { el: $( '#container' ) } );
+			} );
+			$( '#page2' ).on( 'click', function() {
+				if( currentView ) {
+					//currentView.remove();
+				}
+				currentView = new Page2( { el: $( '#container' ) } );
+			} );
+		} );
+	</script>
+</head>
+<body>
+	<div id="menu">
+		<button id="page1">페이지1</button>
+		<button id="page2">페이지2</button>
+	</div>
+	<div id="container">
+
+	</div>
+</body>
+</html>

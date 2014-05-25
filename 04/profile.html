@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title></title>
+	<script src="underscore-min.js"></script>
+	<script src="jquery-2.1.0.min.js"></script>
+	<script src="backbone.js"></script>
+	<script>
+		var dataset = [];
+		dataset.push( { id: 'daisy', name: '박재명', age: '33' } );
+		dataset.push( { id: 'blackiz', name: '김영준', age: '30' } );
+
+		var Router = Backbone.Router.extend( {
+			routes: {
+				// 주소 : 함수
+				":id": "profile"
+			},
+			profile: function( $id ) {
+				var data = _.find( dataset, function( $element ) {
+					return $element.id == $id ? true : false;
+				} );
+				if( !data ) {
+					$( '#profile' ).html( '' );
+					alert( '존재하지 않는 ID 입니다.' );
+					return;
+				}
+				profile.render( data );
+			}
+		} );
+
+		var Profile = Backbone.View.extend( {
+			render: function( $data ) {
+				var html = $( '#profile-template' ).html();
+				//var html = '<ul><li>이름 : <span id="name"><%= name %></span></li><li>나이 : <span id="age"><%= age %></span></li></ul>';
+				html = _.template( html, $data );
+				this.$el.html( html );
+			},
+			events: {
+				"click button#submit" : "onSubmitClick"
+			},
+			onSubmitClick: function() {
+
+			}
+		} );
+
+		var profile;
+
+		$( function() {
+			profile = new Profile( { el: $( '#profile' ) } );
+
+			var router = new Router();
+			Backbone.history.start();
+
+
+			$( '#people button' ).on( 'click', function() {
+				var id = $( this ).data( 'id' );
+//				var data = _.find( dataset, function( $element ) {
+//					return $element.id == id ? true : false;
+//				} );
+				location.hash = id;
+
+//				var profile = new Profile( { el: $( '#profile' ) } );
+//				profile.render( data );
+			} );
+		} );
+	</script>
+</head>
+<body>
+	<div id="people">
+		<button data-id="daisy">박재명</button>
+		<button data-id="blackiz">김영준</button>
+	</div>
+	<div id="profile">
+
+	</div>
+	<script type="text/template" id="profile-template">
+		<ul>
+			<li>이름 : <span id="name"><%= name %></span></li>
+			<li>나이 : <span id="age"><%= age %></span></li>
+		</ul>
+	</script>
+</body>
+</html>
